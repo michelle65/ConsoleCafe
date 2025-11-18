@@ -25,8 +25,10 @@ namespace ConsoleCafe.Application.Services
             string[] addOnFlavors,
             PricingStrategyType pricingStrategyType)
         {
+
             var beverage = _beverageFactory.Create(beverageType);
             var pricingStrategy = CreatePricingStrategy(pricingStrategyType);
+
             for (int i = 0; i < addOns.Length; i++)
             {
                 var addOn = addOns[i];
@@ -64,6 +66,7 @@ namespace ConsoleCafe.Application.Services
                 PricingStrategyType = pricingStrategyType,
             };
         }
+
         private static IPricingStrategy CreatePricingStrategy(PricingStrategyType pricingStrategyType)
         {
             return pricingStrategyType switch

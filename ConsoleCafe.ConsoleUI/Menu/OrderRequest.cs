@@ -7,9 +7,9 @@ namespace ConsoleCafe.ConsoleUI.Menu
     {
         public BeverageType BeverageType { get; set; } = BeverageType.Espresso;
 
-        public List<AddOnType> AddOns { get; set; } = new();
+        public List<AddOnType> AddOns { get; set; } = [];
 
-        public List<string> AddOnFlavors { get; set; } = new();
+        public List<string> AddOnFlavors { get; set; } = [];
 
         public PricingStrategyType PricingStrategyType { get; set; } = PricingStrategyType.Regular;
     }

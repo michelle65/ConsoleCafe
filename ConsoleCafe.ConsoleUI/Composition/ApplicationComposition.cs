@@ -1,7 +1,6 @@
 ﻿using ConsoleCafe.Application.Eventing;
 using ConsoleCafe.Application.Services;
 using ConsoleCafe.ConsoleUI.Logging;
-using ConsoleCafe.ConsoleUI.Logging.Interfaces;
 using ConsoleCafe.ConsoleUI.Menu;
 using ConsoleCafe.ConsoleUI.Options;
 using ConsoleCafe.Infrastructure.Analytics;
@@ -21,7 +20,7 @@ namespace ConsoleCafe.ConsoleUI.Composition
             var eventPublisher = new SimpleOrderEventPublisher([consoleLogger, analytics]);
             var orderService = new OrderService(beverageFactory, eventPublisher);
 
-            ILogger uiLogger = new ConsoleLogger();
+            var uiLogger = new ConsoleLogger();
             var menuReader = new MenuInputReader(uiLogger);
             var menuRenderer = new MenuRenderer(uiLogger, currencyOptions);
             var orderInputCollector = new OrderInputCollector(menuRenderer, menuReader);
