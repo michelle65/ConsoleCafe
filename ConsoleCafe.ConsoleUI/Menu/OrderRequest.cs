@@ -1,13 +1,14 @@
-﻿using ConsoleCafe.Domain.Pricing;
+﻿using ConsoleCafe.Domain.Beverages.Enums;
+using ConsoleCafe.Domain.Pricing;
 using ConsoleCafe.Domain.Pricing.Interfaces;
 
 namespace ConsoleCafe.ConsoleUI.Menu
 {
     public class OrderRequest
     {
-        public string BeverageType { get; set; } = string.Empty;
+        public BeverageType BeverageType { get; set; } = BeverageType.Espresso;
 
-        public List<string> AddOns { get; set; } = new();
+        public List<AddOnType> AddOns { get; set; } = new();
 
         public List<string> AddOnFlavors { get; set; } = new();
 

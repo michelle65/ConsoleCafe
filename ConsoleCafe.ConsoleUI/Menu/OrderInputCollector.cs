@@ -1,4 +1,5 @@
-﻿using ConsoleCafe.Domain.Pricing;
+﻿using ConsoleCafe.Domain.Beverages.Enums;
+using ConsoleCafe.Domain.Pricing;
 using ConsoleCafe.Domain.Pricing.Interfaces;
 
 namespace ConsoleCafe.ConsoleUI.Menu
@@ -22,20 +23,20 @@ namespace ConsoleCafe.ConsoleUI.Menu
             var beverageChoice = _reader.ReadOption("Enter your choice (1-3): ", new[] { "1", "2", "3" });
             var beverageType = beverageChoice switch
             {
-                "1" => "espresso",
-                "2" => "tea",
-                "3" => "hotchocolate",
-                _ => "espresso"
+                "1" => BeverageType.Espresso,
+                "2" => BeverageType.Tea,
+                "3" => BeverageType.HotChocolate,
+                _ => BeverageType.Espresso
             };
 
-            var addOns = new List<string>();
+            var addOns = new List<AddOnType>();
             var addOnFlavors = new List<string>();
 
             var addingAddOns = true;
             while (addingAddOns)
             {
                 _renderer.RenderAddOnOptions();
-                var addOnChoice = _reader.ReadOption("Enter your choice (0-3): ", new[] { "0", "1", "2", "3" });
+                var addOnChoice = _reader.ReadOption("Enter your choice (0-3): ", ["0", "1", "2", "3"]);
 
                 switch (addOnChoice)
                 {
@@ -43,16 +44,16 @@ namespace ConsoleCafe.ConsoleUI.Menu
                         addingAddOns = false;
                         break;
                     case "1":
-                        addOns.Add("milk");
+                        addOns.Add(AddOnType.Milk);
                         addOnFlavors.Add(string.Empty);
                         break;
                     case "2":
-                        addOns.Add("syrup");
+                        addOns.Add(AddOnType.Syrup);
                         var flavor = _reader.ReadText("Enter syrup flavor (e.g., vanilla): ", "vanilla");
                         addOnFlavors.Add(flavor);
                         break;
                     case "3":
-                        addOns.Add("extrashot");
+                        addOns.Add(AddOnType.ExtraShot);
                         addOnFlavors.Add(string.Empty);
                         break;
                 }

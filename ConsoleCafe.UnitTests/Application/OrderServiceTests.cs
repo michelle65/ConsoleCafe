@@ -1,4 +1,5 @@
 ﻿using ConsoleCafe.Application.Services;
+using ConsoleCafe.Domain.Beverages.Enums;
 using ConsoleCafe.Domain.Beverages.Interfaces;
 using ConsoleCafe.Domain.Events;
 using ConsoleCafe.Domain.Factories.Interfaces;
@@ -21,7 +22,7 @@ namespace ConsoleCafe.UnitTests.Application
             baseBeverageMock.SetupGet(b => b.Name).Returns("Espresso");
 
             _beverageFactoryMock
-                .Setup(factory => factory.Create("espresso"))
+                .Setup(factory => factory.Create(BeverageType.Espresso))
                 .Returns(baseBeverageMock.Object);
 
             OrderPlaced? publishedEvent = null;
@@ -32,8 +33,8 @@ namespace ConsoleCafe.UnitTests.Application
             var service = new OrderService(_beverageFactoryMock.Object, _eventPublisherMock.Object);
 
             var result = service.ProcessOrder(
-                "espresso",
-                ["milk", "syrup"],
+               BeverageType.Espresso,
+               [AddOnType.Milk, AddOnType.Syrup],
                 [string.Empty, "vanilla"],
                 new RegularPricing());
 
@@ -54,7 +55,7 @@ namespace ConsoleCafe.UnitTests.Application
                 Assert.Equal(result.Total, publishedEvent.Total);
             }
 
-            _beverageFactoryMock.Verify(factory => factory.Create("espresso"), Times.Once);
+            _beverageFactoryMock.Verify(factory => factory.Create(BeverageType.Espresso), Times.Once);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using ConsoleCafe.Application.Dtos;
 using ConsoleCafe.Domain.Beverages.Decorators;
+using ConsoleCafe.Domain.Beverages.Enums;
 using ConsoleCafe.Domain.Events;
 using ConsoleCafe.Domain.Factories.Interfaces;
 using ConsoleCafe.Domain.Pricing.Interfaces;
@@ -18,8 +19,8 @@ namespace ConsoleCafe.Application.Services
         }
 
         public OrderResultDto ProcessOrder(
-            string beverageType,
-            string[] addOns,
+            BeverageType beverageType,
+            AddOnType[] addOns,
             string[] addOnFlavors,
             IPricingStrategy pricingStrategy)
         {
@@ -27,12 +28,12 @@ namespace ConsoleCafe.Application.Services
 
             for (int i = 0; i < addOns.Length; i++)
             {
-                var addOn = addOns[i].ToLower();
+                var addOn = addOns[i];
                 beverage = addOn switch
                 {
-                    "milk" => new MilkDecorator(beverage),
-                    "syrup" => new SyrupDecorator(beverage, addOnFlavors[i]),
-                    "extrashot" => new ExtraShotDecorator(beverage),
+                    AddOnType.Milk => new MilkDecorator(beverage),
+                    AddOnType.Syrup => new SyrupDecorator(beverage, addOnFlavors[i]),
+                    AddOnType.ExtraShot => new ExtraShotDecorator(beverage),
                     _ => beverage
                 };
             }
