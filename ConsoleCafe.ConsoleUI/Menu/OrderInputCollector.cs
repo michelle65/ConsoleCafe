@@ -1,6 +1,5 @@
 ﻿using ConsoleCafe.Domain.Beverages.Enums;
 using ConsoleCafe.Domain.Pricing;
-using ConsoleCafe.Domain.Pricing.Interfaces;
 
 namespace ConsoleCafe.ConsoleUI.Menu
 {
@@ -20,7 +19,7 @@ namespace ConsoleCafe.ConsoleUI.Menu
             _renderer.RenderHeader();
             _renderer.RenderBeverageOptions();
 
-            var beverageChoice = _reader.ReadOption("Enter your choice (1-3): ", new[] { "1", "2", "3" });
+            var beverageChoice = _reader.ReadOption("Enter your choice (1-3): ", ["1", "2", "3"]);
             var beverageType = beverageChoice switch
             {
                 "1" => BeverageType.Espresso,
@@ -60,17 +59,17 @@ namespace ConsoleCafe.ConsoleUI.Menu
             }
 
             _renderer.RenderPricingOptions();
-            var pricingChoice = _reader.ReadOption("Enter your choice (1-2): ", new[] { "1", "2" });
-            IPricingStrategy pricingStrategy = pricingChoice is "2"
-                ? new HappyHourPricing()
-                : new RegularPricing();
+            var pricingChoice = _reader.ReadOption("Enter your choice (1-2): ", ["1", "2"]);
+            var pricingStrategyType = pricingChoice is "2"
+                ? PricingStrategyType.HappyHour
+                : PricingStrategyType.Regular;
 
             return new OrderRequest
             {
                 BeverageType = beverageType,
                 AddOns = addOns,
                 AddOnFlavors = addOnFlavors,
-                PricingStrategy = pricingStrategy
+                PricingStrategyType = pricingStrategyType
             };
         }
     }

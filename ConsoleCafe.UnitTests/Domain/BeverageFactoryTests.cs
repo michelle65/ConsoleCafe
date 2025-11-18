@@ -1,4 +1,5 @@
 ﻿using ConsoleCafe.Domain.Beverages;
+using ConsoleCafe.Domain.Beverages.Enums;
 using ConsoleCafe.Infrastructure.Factories;
 
 namespace ConsoleCafe.UnitTests.Domain
@@ -8,10 +9,10 @@ namespace ConsoleCafe.UnitTests.Domain
         private readonly BeverageFactory _factory = new();
 
         [Theory]
-        [InlineData("espresso", typeof(Espresso))]
-        [InlineData("tea", typeof(Tea))]
-        [InlineData("hotchocolate", typeof(HotChocolate))]
-        public void Create_ShouldReturnExpectedType(string key, Type expectedType)
+        [InlineData(BeverageType.Espresso, typeof(Espresso))]
+        [InlineData(BeverageType.Tea, typeof(Tea))]
+        [InlineData(BeverageType.HotChocolate, typeof(HotChocolate))]
+        public void Create_ShouldReturnExpectedType(BeverageType key, Type expectedType)
         {
             var beverage = _factory.Create(key);
 
@@ -21,7 +22,7 @@ namespace ConsoleCafe.UnitTests.Domain
         [Fact]
         public void Create_ShouldThrowForUnknownKey()
         {
-            Assert.Throws<ArgumentException>(() => _factory.Create("unknown"));
+            Assert.Throws<ArgumentOutOfRangeException>(() => _factory.Create((BeverageType)300));
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using ConsoleCafe.Domain.Beverages.Enums;
 using ConsoleCafe.Domain.Pricing;
-using ConsoleCafe.Domain.Pricing.Interfaces;
 
 namespace ConsoleCafe.ConsoleUI.Menu
 {
@@ -12,6 +11,6 @@ namespace ConsoleCafe.ConsoleUI.Menu
 
         public List<string> AddOnFlavors { get; set; } = new();
 
-        public IPricingStrategy PricingStrategy { get; set; } = new RegularPricing();
+        public PricingStrategyType PricingStrategyType { get; set; } = PricingStrategyType.Regular;
     }
 }

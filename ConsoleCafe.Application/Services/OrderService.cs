@@ -3,6 +3,7 @@ using ConsoleCafe.Domain.Beverages.Decorators;
 using ConsoleCafe.Domain.Beverages.Enums;
 using ConsoleCafe.Domain.Events;
 using ConsoleCafe.Domain.Factories.Interfaces;
+using ConsoleCafe.Domain.Pricing;
 using ConsoleCafe.Domain.Pricing.Interfaces;
 
 namespace ConsoleCafe.Application.Services
@@ -22,10 +23,10 @@ namespace ConsoleCafe.Application.Services
             BeverageType beverageType,
             AddOnType[] addOns,
             string[] addOnFlavors,
-            IPricingStrategy pricingStrategy)
+            PricingStrategyType pricingStrategyType)
         {
             var beverage = _beverageFactory.Create(beverageType);
-
+            var pricingStrategy = CreatePricingStrategy(pricingStrategyType);
             for (int i = 0; i < addOns.Length; i++)
             {
                 var addOn = addOns[i];
@@ -59,7 +60,16 @@ namespace ConsoleCafe.Application.Services
                 Timestamp = timestamp,
                 Description = description,
                 Subtotal = subtotal,
-                Total = total
+                Total = total,
+                PricingStrategyType = pricingStrategyType,
+            };
+        }
+        private static IPricingStrategy CreatePricingStrategy(PricingStrategyType pricingStrategyType)
+        {
+            return pricingStrategyType switch
+            {
+                PricingStrategyType.HappyHour => new HappyHourPricing(),
+                _ => new RegularPricing()
             };
         }
     }

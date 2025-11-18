@@ -1,4 +1,6 @@
 ﻿using ConsoleCafe.Application.Services;
+using ConsoleCafe.Domain.Pricing;
+using ConsoleCafe.Domain.Pricing.Interfaces;
 using ConsoleCafe.Infrastructure.Analytics;
 
 namespace ConsoleCafe.ConsoleUI.Menu
@@ -39,9 +41,11 @@ namespace ConsoleCafe.ConsoleUI.Menu
                         orderRequest.BeverageType,
                         [.. orderRequest.AddOns],
                         [.. orderRequest.AddOnFlavors],
-                        orderRequest.PricingStrategy);
+                        orderRequest.PricingStrategyType);
 
-                    _renderer.RenderReceipt(orderResult.OrderId, orderResult.Timestamp, orderResult.Description, orderResult.Subtotal, orderResult.Total, orderRequest.PricingStrategy);
+                    var pricingStrategy = ResolvePricingStrategy(orderRequest.PricingStrategyType);
+
+                    _renderer.RenderReceipt(orderResult.OrderId, orderResult.Timestamp, orderResult.Description, orderResult.Subtotal, orderResult.Total, pricingStrategy);
                     _renderer.RenderAnalytics(_analytics.OrderCount, _analytics.TotalRevenue);
 
                     continueOrdering = AskToContinue();
@@ -61,6 +65,14 @@ namespace ConsoleCafe.ConsoleUI.Menu
             _renderer.RenderContinueOptions();
             var continueChoice = _reader.ReadOption("Enter your choice (0-1): ", ["0", "1"]);
             return continueChoice != "0";
+        }
+        private IPricingStrategy ResolvePricingStrategy(PricingStrategyType pricingStrategyType)
+        {
+            return pricingStrategyType switch
+            {
+                PricingStrategyType.HappyHour => new HappyHourPricing(),
+                _ => new RegularPricing()
+            };
         }
     }
 }

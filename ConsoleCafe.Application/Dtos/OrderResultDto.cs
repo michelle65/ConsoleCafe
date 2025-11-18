@@ -1,4 +1,6 @@
-﻿namespace ConsoleCafe.Application.Dtos
+﻿using ConsoleCafe.Domain.Pricing;
+
+namespace ConsoleCafe.Application.Dtos
 {
     public class OrderResultDto
     {
@@ -11,5 +13,7 @@
         public decimal Subtotal { get; set; }
 
         public decimal Total { get; set; }
+        public PricingStrategyType PricingStrategyType { get; set; }
     }
 }
+

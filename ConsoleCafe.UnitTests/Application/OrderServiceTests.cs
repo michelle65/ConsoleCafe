@@ -36,7 +36,7 @@ namespace ConsoleCafe.UnitTests.Application
                BeverageType.Espresso,
                [AddOnType.Milk, AddOnType.Syrup],
                 [string.Empty, "vanilla"],
-                new RegularPricing());
+                PricingStrategyType.Regular);
 
             Assert.Equal("Espresso, milk, vanilla syrup", result.Description);
             Assert.Equal(3.40m, result.Subtotal);
