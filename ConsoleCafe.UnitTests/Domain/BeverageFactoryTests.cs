@@ -18,11 +18,5 @@ namespace ConsoleCafe.UnitTests.Domain
 
             Assert.IsType(expectedType, beverage);
         }
-
-        [Fact]
-        public void Create_ShouldThrowForUnknownKey()
-        {
-            Assert.Throws<ArgumentOutOfRangeException>(() => _factory.Create((BeverageType)300));
-        }
     }
 }

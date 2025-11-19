@@ -11,51 +11,62 @@ namespace ConsoleCafe.UnitTests.Application
     public class OrderServiceTests
     {
         private readonly Mock<IBeverageFactory> _beverageFactoryMock = new();
-        private readonly Mock<IOrderEventPublisher> _eventPublisherMock = new();
+        private readonly Mock<IOrderEventPublisher> _orderEventPublisherMock = new();
 
-        [Fact]
-        public void ProcessOrder_ShouldReturnDecoratedBeverageAndPublishEvent()
+        private readonly OrderService _orderService;
+        private OrderPlaced? _capturedOrderPlacedEvent;
+
+        public OrderServiceTests()
         {
-            var baseBeverageMock = new Mock<IBeverage>();
-            baseBeverageMock.Setup(b => b.Cost()).Returns(2.50m);
-            baseBeverageMock.Setup(b => b.Describe()).Returns("Espresso");
-            baseBeverageMock.SetupGet(b => b.Name).Returns("Espresso");
+            var espressoBeverageMock = new Mock<IBeverage>();
+            espressoBeverageMock.Setup(b => b.Cost()).Returns(2.50m);
+            espressoBeverageMock.Setup(b => b.Describe()).Returns("Espresso");
+            espressoBeverageMock.SetupGet(b => b.Name).Returns("Espresso");
 
             _beverageFactoryMock
                 .Setup(factory => factory.Create(BeverageType.Espresso))
-                .Returns(baseBeverageMock.Object);
+                .Returns(espressoBeverageMock.Object);
 
-            OrderPlaced? publishedEvent = null;
-            _eventPublisherMock
+            _orderEventPublisherMock
                 .Setup(publisher => publisher.Publish(It.IsAny<OrderPlaced>()))
-                .Callback<OrderPlaced>(evt => publishedEvent = evt);
+                .Callback<OrderPlaced>(published => _capturedOrderPlacedEvent = published);
 
-            var service = new OrderService(_beverageFactoryMock.Object, _eventPublisherMock.Object);
+            _orderService = new OrderService(_beverageFactoryMock.Object, _orderEventPublisherMock.Object);
+        }
 
-            var result = service.ProcessOrder(
-               BeverageType.Espresso,
-               [AddOnType.Milk, AddOnType.Syrup],
-                [string.Empty, "vanilla"],
-                PricingStrategyType.Regular);
+        [Fact]
+        public void ProcessOrder_ShouldReturnDecoratedBeverageResult()
+        {
+            var addOnTypes = new[] { AddOnType.Milk, AddOnType.Syrup };
+            var addOnOptions = new[] { string.Empty, "vanilla" };
 
-            Assert.Equal("Espresso, milk, vanilla syrup", result.Description);
-            Assert.Equal(3.40m, result.Subtotal);
-            Assert.Equal(result.Subtotal, result.Total);
-            Assert.NotEqual(Guid.Empty, result.OrderId);
-            Assert.True(result.Timestamp > DateTimeOffset.MinValue);
+            var actual = _orderService.ProcessOrder(BeverageType.Espresso, addOnTypes, addOnOptions, PricingStrategyType.Regular);
 
-            _eventPublisherMock.Verify(publisher => publisher.Publish(It.IsAny<OrderPlaced>()), Times.Once);
-
-            Assert.NotNull(publishedEvent);
-            if (publishedEvent is not null)
-            {
-                Assert.Equal(result.OrderId, publishedEvent.OrderId);
-                Assert.Equal(result.Timestamp, publishedEvent.At);
-                Assert.Equal(result.Description, publishedEvent.Description);
-                Assert.Equal(result.Total, publishedEvent.Total);
-            }
+            Assert.Equal("Espresso, milk, vanilla syrup", actual.Description);
+            Assert.Equal(3.40m, actual.Subtotal);
+            Assert.Equal(actual.Subtotal, actual.Total);
+            Assert.NotEqual(Guid.Empty, actual.OrderId);
+            Assert.True(actual.Timestamp > DateTimeOffset.MinValue);
 
             _beverageFactoryMock.Verify(factory => factory.Create(BeverageType.Espresso), Times.Once);
+        }
+
+        [Fact]
+        public void ProcessOrder_ShouldPublishOrderPlacedEventOnce_WithExpectedPayload()
+        {
+            var addOnTypes = new[] { AddOnType.Milk, AddOnType.Syrup };
+            var addOnOptions = new[] { string.Empty, "vanilla" };
+
+            var actual = _orderService.ProcessOrder(BeverageType.Espresso, addOnTypes, addOnOptions, PricingStrategyType.Regular);
+
+            _orderEventPublisherMock.Verify(publisher => publisher.Publish(It.IsAny<OrderPlaced>()), Times.Once);
+
+            Assert.NotNull(_capturedOrderPlacedEvent);
+            var published = _capturedOrderPlacedEvent!;
+            Assert.Equal(actual.OrderId, published.OrderId);
+            Assert.Equal(actual.Timestamp, published.At);
+            Assert.Equal(actual.Description, published.Description);
+            Assert.Equal(actual.Total, published.Total);
         }
     }
 }
